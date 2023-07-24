@@ -47,7 +47,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(process.env.PORT || 8800, () => {
+app.listen(process.env.OFFLINE_PORT || 8800, () => {
   connectDB();
   console.log("Backend server is running!");
 });

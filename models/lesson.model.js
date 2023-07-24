@@ -6,9 +6,15 @@ const lessonSchema = Schema({
   name: {
     type: String,
     required: true,
+  },  
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Course',
+    required: true,
   },
   roomId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Rooms',
     required: true,
   },
   start: {
@@ -20,10 +26,6 @@ const lessonSchema = Schema({
     required: true,
   },
   description: {
-    type: String,
-    required: true,
-  },
-  courseId: {
     type: String,
     required: true,
   },

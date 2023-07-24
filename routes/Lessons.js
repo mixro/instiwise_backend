@@ -1,5 +1,6 @@
 import Lesson from "../models/lesson.model.js";
 import express from "express";
+import moment from "moment";
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.post("/", async (req, res) => {
     } catch(err) {
         res.status(500).json(err);
     }
-})
+});
 
 //UPDATE 
 router.put("/:id", async (req, res) => {
@@ -51,7 +52,7 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-//GET ALL LessonS
+//GET ALL LESSONS
 router.get('/', async (req, res) => {
     try {
         const lessons = await Lesson.find();
@@ -60,5 +61,68 @@ router.get('/', async (req, res) => {
         res.status(200).json(err);
     }
 })
+
+// GET ONGOING LESSONS
+router.get('/ongoing', async (req, res) => {
+    try {
+      const currentTime = moment(); // Use moment.js to get the current time in the 24-hour format
+      const ongoingLessons = await Lesson.find({
+        start: { $lte: currentTime.format("HH:mm") }, // Format the time to 24-hour format (e.g., "23:00")
+        end: { $gte: currentTime.format("HH:mm") }, // Format the time to 24-hour format (e.g., "23:00")
+      }).populate('roomId courseId');
+    
+      res.json(ongoingLessons);
+    } catch (error) {
+      res.status(500).json({ message: 'Error getting ongoing lessons' });
+    }
+});
+
+//GET UPCOMING LESSONS
+router.get('/upcoming', async (req, res) => {
+  try {
+    const currentTime = moment(); // Get the current time as a moment object
+
+    const currentTimeString = currentTime.format('HH:mm'); // Get the current time in 24-hour format (HH:mm)
+
+    const currentDay = currentTime.format('dddd'); // Get the current day in long format (e.g., "Monday")
+
+    const upcomingLessons = await Lesson.find({
+      day: { $eq: currentDay },
+      start: { $gt: currentTimeString },
+    }).populate('roomId courseId');
+
+    // Exclude ongoing lessons from upcoming lessons
+    const ongoingLessons = await Lesson.find({
+      day: { $eq: currentDay },
+      start: { $lte: currentTimeString },
+      end: { $gte: currentTimeString },
+    }).populate('roomId courseId');
+
+    const currentTimeMinutes = getTimeInMinutes(currentTimeString);
+
+    const filteredUpcomingLessons = upcomingLessons.filter((lesson) => {
+      const startMinutes = getTimeInMinutes(lesson.start);
+      const endMinutes = getTimeInMinutes(lesson.end);
+
+      // Check if the lesson is not ongoing
+      return !ongoingLessons.some((ongoingLesson) => ongoingLesson._id.equals(lesson._id)) && startMinutes > currentTimeMinutes;
+    });
+
+    res.json(filteredUpcomingLessons);
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting upcoming lessons', error: error.message });
+  }
+});
+
+// Helper function to convert time string (HH:mm) to minutes
+const getTimeInMinutes = (timeString) => {
+  const [hours, minutes] = timeString.split(':');
+  return parseInt(hours) * 60 + parseInt(minutes);
+};
+
+  
+  
+  
+  
 
 export default router
