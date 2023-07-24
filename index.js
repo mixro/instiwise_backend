@@ -10,6 +10,10 @@ import bodyParser from "body-parser";
 import path from "path"
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import moment from "moment-timezone";
+
+// Setting time zone to East Africa Time (Africa/Nairobi)
+moment.tz.setDefault("Africa/Nairobi");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
