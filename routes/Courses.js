@@ -1,7 +1,9 @@
+import { sendUpdatedOngoingCourse } from "../controller.js";
 import Course from "../models/course.model.js";
 import Lesson from "../models/lesson.model.js";
 import express from "express";
 import moment from "moment";
+import { getIoInstance } from "../socket.js";
 
 const router = express.Router();
 
@@ -11,6 +13,7 @@ router.post("/", async (req, res) => {
 
     try {
         const savedCourse = await newCourse.save();
+
         res.status(200).json(savedCourse);
     } catch(err) {
         res.status(500).json(err);
@@ -27,6 +30,7 @@ router.put("/:id", async (req, res) => {
             },
             { new: true },
         );
+
         res.status(200).json(updatedCourse);
     } catch(err) {
         res.status(500).json(err);
@@ -37,6 +41,7 @@ router.put("/:id", async (req, res) => {
 router.get("/find/:id", async( req, res) => {
     try {
         const course = await Course.findById(req.params.id);
+
         res.status(200).json(course);
     } catch(err) {
         res.status(500).json(err);
@@ -47,6 +52,7 @@ router.get("/find/:id", async( req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const course = await Course.findByIdAndDelete(req.params.id);
+
         res.status(200).json(`The course with id ${course._id} has been deleted..`);
     } catch(err) {
         res.status(500).json(err);
@@ -57,6 +63,7 @@ router.delete("/:id", async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const courses = await Course.find();
+
         res.status(200).json(courses);
     } catch(err) {
         res.status(200).json(err);
@@ -82,6 +89,10 @@ router.get("/ongoingCourses", async (req, res) => {
             _id: { $in: courseIdsWithOngoingLessons },
         });
     
+        //socket.io connections
+        const io = getIoInstance();
+        sendUpdatedOngoingCourse(io);
+
         res.status(200).json(coursesWithOngoingLessons);
     } catch (err) {
       res.status(500).json(err);

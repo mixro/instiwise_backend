@@ -1,6 +1,8 @@
 import Lesson from "../models/lesson.model.js";
 import express from "express";
 import moment from "moment";
+import { sendUpdatedOngoingLessons, sendUpdatedUpcomingLessons } from "../controller.js";
+import { getIoInstance } from "../socket.js";
 
 const router = express.Router();
 
@@ -10,6 +12,7 @@ router.post("/", async (req, res) => {
 
     try {
         const savedLesson = await newLesson.save();
+
         res.status(200).json(savedLesson);
     } catch(err) {
         res.status(500).json(err);
@@ -26,6 +29,7 @@ router.put("/:id", async (req, res) => {
             },
             { new: true },
         );
+
         res.status(200).json(updatedLesson);
     } catch(err) {
         res.status(500).json(err);
@@ -36,6 +40,7 @@ router.put("/:id", async (req, res) => {
 router.get("/find/:id", async( req, res) => {
     try {
         const lesson = await Lesson.findById(req.params.id);
+
         res.status(200).json(lesson);
     } catch(err) {
         res.status(500).json(err);
@@ -46,6 +51,7 @@ router.get("/find/:id", async( req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const lesson = await Lesson.findByIdAndDelete(req.params.id);
+
         res.status(200).json(`The lesson with id ${lesson._id} has been deleted..`);
     } catch(err) {
         res.status(500).json(err);
@@ -56,6 +62,7 @@ router.delete("/:id", async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const lessons = await Lesson.find();
+
         res.status(200).json(lessons);
     } catch(err) {
         res.status(200).json(err);
@@ -70,7 +77,11 @@ router.get('/ongoing', async (req, res) => {
         start: { $lte: currentTime.format("HH:mm") }, // Format the time to 24-hour format (e.g., "23:00")
         end: { $gte: currentTime.format("HH:mm") }, // Format the time to 24-hour format (e.g., "23:00")
       }).populate('roomId courseId');
-    
+
+      //socket.io connections
+      const io = getIoInstance();
+      sendUpdatedOngoingLessons(io);
+
       res.json(ongoingLessons);
     } catch (error) {
       res.status(500).json({ message: 'Error getting ongoing lessons' });
@@ -108,6 +119,10 @@ router.get('/upcoming', async (req, res) => {
       return !ongoingLessons.some((ongoingLesson) => ongoingLesson._id.equals(lesson._id)) && startMinutes > currentTimeMinutes;
     });
 
+    //socket.io connections
+    const io = getIoInstance();
+    sendUpdatedUpcomingLessons(io);
+    
     res.json(filteredUpcomingLessons);
   } catch (error) {
     res.status(500).json({ message: 'Error getting upcoming lessons', error: error.message });
@@ -122,7 +137,4 @@ const getTimeInMinutes = (timeString) => {
 
   
   
-  
-  
-
 export default router
