@@ -74,11 +74,15 @@ router.get('/', async (req, res) => {
 router.get("/ongoingCourses", async (req, res) => {
     try {
         const currentTime = moment();
+
+        const currentDay = currentTime.format('dddd'); // Get the current day in long format (e.g., "Monday")
+        const currentTimeString = currentTime.format('HH:mm'); // Get the current time in 24-hour format (HH:mm)
   
         // Find all lessons with ongoing status at the current time
         const ongoingLessons = await Lesson.find({
-            start: { $lte: currentTime.format("HH:mm") }, // Format the time to 24-hour format (e.g., "23:00")
-            end: { $gte: currentTime.format("HH:mm") },
+            day: { $eq: currentDay },
+            start: { $lte: currentTimeString },
+            end: { $gte: currentTimeString },
         });
     
         // Get distinct courseId values of lessons with ongoing status
@@ -99,5 +103,6 @@ router.get("/ongoingCourses", async (req, res) => {
       console.log(err);
     }
 });
+
 
 export default router
