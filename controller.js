@@ -4,18 +4,9 @@ import Course from "./models/course.model.js";
 import mongoose from 'mongoose';
 import moment from "moment";
 
-//FUNCTIONS
-export const emitUpdatedRoomsData = async (io) => {
-  try {
-    await sendUpdatedFreeRooms(io);
-    await sendUpdatedInUseRooms(io);
-  } catch (error) {
-    console.error("Error sending updated rooms data:", error);
-  }
-};
 
 //FREE ROOMS
-export const sendUpdatedFreeRooms = async (io) => {
+export const sendUpdatedFreeRooms = async () => {
     try {
       const currentTime = moment();
       const currentDay = currentTime.format('dddd'); // Get the current day in long format (e.g., "Monday")
@@ -34,15 +25,15 @@ export const sendUpdatedFreeRooms = async (io) => {
       const freeRooms = await Room.find({
           _id: { $nin: inUseRoomObjectIds },
       });
-  
-      io.emit("freeRoomsData", freeRooms);
+
+      return freeRooms;
     } catch (error) {
       console.error("Error sending free rooms data:", error);
     }
 };
 
 //INUSE ROOMS
-export const sendUpdatedInUseRooms = async (io) => {
+export const sendUpdatedInUseRooms = async () => {
     try {
       const currentTime = moment();
 
@@ -69,14 +60,14 @@ export const sendUpdatedInUseRooms = async (io) => {
         await room.save();
       }
   
-      io.emit("InUseRoomsData", roomsInUse);
+      return roomsInUse;
     } catch (error) {
         console.error("Error sending rooms in use data:", error);
     }
 };
 
 //ONGOING COURSES
-export const sendUpdatedOngoingCourse = async (io) => {
+export const sendUpdatedOngoingCourse = async () => {
     try {
       const currentTime = moment();
 
@@ -98,14 +89,14 @@ export const sendUpdatedOngoingCourse = async (io) => {
           _id: { $in: courseIdsWithOngoingLessons },
       });
   
-      io.emit("ongoingCoursesData", coursesWithOngoingLessons);
+      return coursesWithOngoingLessons;
     } catch (error) {
         console.error("Error sending ongoing courses data:", error);
     }
 };
 
 //ONGOING LESSONS
-export const sendUpdatedOngoingLessons = async (io) => {
+export const sendUpdatedOngoingLessons = async () => {
     try {
       const currentTime = moment(); // Get the current time as a moment object
 
@@ -119,14 +110,14 @@ export const sendUpdatedOngoingLessons = async (io) => {
         end: { $gte: currentTimeString },
       }).populate('roomId courseId');
   
-      io.emit("ongoingLessonsData", ongoingLessons);
+      return ongoingLessons;
     } catch (error) {
         console.error("Error sending ongoing lessons data:", error);
     }
 };
 
 //UPCOMING LESSONS
-export const sendUpdatedUpcomingLessons = async (io) => {
+export const sendUpdatedUpcomingLessons = async () => {
     try {
         const currentTime = moment(); // Get the current time as a moment object
 
@@ -156,7 +147,7 @@ export const sendUpdatedUpcomingLessons = async (io) => {
         return !ongoingLessons.some((ongoingLesson) => ongoingLesson._id.equals(lesson._id)) && startMinutes > currentTimeMinutes;
         });
   
-      io.emit("upcomingLessonsData", filteredUpcomingLessons);
+      return filteredUpcomingLessons;
     } catch (error) {
         console.error("Error sending upcoming lessons data:", error);
     }

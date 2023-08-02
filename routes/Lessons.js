@@ -1,8 +1,6 @@
 import Lesson from "../models/lesson.model.js";
 import express from "express";
 import moment from "moment";
-import { sendUpdatedOngoingLessons, sendUpdatedUpcomingLessons } from "../controller.js";
-import { getIoInstance } from "../socket.js";
 
 const router = express.Router();
 
@@ -97,10 +95,6 @@ router.get('/ongoing', async (req, res) => {
       end: { $gte: currentTimeString },
     }).populate('roomId courseId');
 
-    //socket.io connections
-    const io = getIoInstance();
-    sendUpdatedOngoingLessons(io);
-
     res.json(ongoingLessons);
   } catch (error) {
     res.status(500).json({ message: 'Error getting ongoing lessons', error: error.message });
@@ -137,10 +131,6 @@ router.get('/upcoming', async (req, res) => {
       // Check if the lesson is not ongoing
       return !ongoingLessons.some((ongoingLesson) => ongoingLesson._id.equals(lesson._id)) && startMinutes > currentTimeMinutes;
     });
-
-    //socket.io connections
-    const io = getIoInstance();
-    sendUpdatedUpcomingLessons(io);
     
     res.json(filteredUpcomingLessons);
   } catch (error) {

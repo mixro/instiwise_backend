@@ -7,18 +7,15 @@ import lessonRoute from "./routes/Lessons.js";
 import courseRoute from "./routes/Courses.js";
 import cors from "cors";
 import bodyParser from "body-parser";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import moment from "moment-timezone";
-import { io, httpServer, app } from "./socket.js";
+import { createServer } from "http";
 import { sendUpdatedFreeRooms, sendUpdatedInUseRooms, sendUpdatedOngoingCourse, sendUpdatedOngoingLessons, sendUpdatedUpcomingLessons } from "./controller.js";
 
 // Setting time zone to East Africa Time (Africa/Nairobi)
 moment.tz.setDefault("Africa/Nairobi");
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const app = express();
+const httpServer = createServer(app);
 
 //mongoose connection
 mongoose.set('strictQuery', true);
@@ -38,7 +35,7 @@ const handleError = (error) => {
 }
 
 //middleware
-app.use(cors({ origin: ["http://localhost:3000", "http://localhost:3001",], credentials: true }));
+app.use(cors({ origin: ["http://localhost:3000", "http://localhost:3001", "https://instiwise.netlify.app"], credentials: true }));
 app.use(express.json());
 
 //body parser 
@@ -50,35 +47,42 @@ app.use("/api/rooms", roomRoute);
 app.use("/api/lessons", lessonRoute);
 app.use("/api/courses", courseRoute);
 
-//static files
-app.use(express.static(path.join(__dirname, "public")));
+// SSE route for sending real-time updates
+app.get("/sse", async (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+  const sendUpdates = async () => {  
+    const freeRooms = await sendUpdatedFreeRooms();
+    const inUseRooms = await sendUpdatedInUseRooms();
+    const ongoingCourses = await sendUpdatedOngoingCourse();
+    const ongoingLessons = await sendUpdatedOngoingLessons();
+    const upcomingLessons = await sendUpdatedUpcomingLessons();
+  
+    // Collect the data
+    const updatedData = {
+      freeRooms,
+      inUseRooms,
+      ongoingCourses,
+      ongoingLessons,
+      upcomingLessons
+    };
+  
+    // Send a message to the client
+    const message = `data: ${JSON.stringify(updatedData)}\n\n`;
+    res.write(message);
+  };
+  
+  await sendUpdates();
 
-// Create Websocket
-io.on('connection', (socket) => {
-  console.log('A client connected.');
+  const intervalId = setInterval(async () => {
+    await sendUpdates();
+  }, 60000); // Send updates every 1 seconds
 
-  socket.on('chat message', (message) => {
-    console.log('Received message:', message);
-
-    const responseMessage = "Server says: Hello, frontend!";
-    io.emit('chat message', responseMessage);
-  });
-
-  socket.on('requestData', () => {
-    console.log('Received request for free rooms data from the frontend.');
-    sendUpdatedFreeRooms(socket); 
-    sendUpdatedInUseRooms(socket);
-    sendUpdatedOngoingCourse(socket);
-    sendUpdatedOngoingLessons(socket);
-    sendUpdatedUpcomingLessons(socket);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('A client disconnected.');
+  // Handle client disconnect
+  req.on("close", () => {
+    clearInterval(intervalId);
   });
 });
 

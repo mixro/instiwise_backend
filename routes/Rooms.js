@@ -3,8 +3,6 @@ import Lesson from '../models/lesson.model.js';
 import express from "express";
 import mongoose from 'mongoose';
 import moment from "moment";
-import { getIoInstance } from "../socket.js";
-import { emitUpdatedRoomsData } from "../controller.js";
 
 const router = express.Router();
 
@@ -113,10 +111,6 @@ router.get('/free', async (req, res) => {
           _id: { $nin: inUseRoomObjectIds },
       });
 
-      //socket.io connections
-      const io = getIoInstance();
-      emitUpdatedRoomsData(io);
-
       res.json(freeRooms);
   } catch (error) {
       console.log(error);
@@ -152,10 +146,6 @@ router.get('/inUse', async (req, res) => {
       room.status = 'occupied';
       await room.save();
     }
-
-    //socket.io connections
-    const io = getIoInstance();
-    emitUpdatedRoomsData(io);
 
     res.json(roomsInUse);
   } catch (error) {

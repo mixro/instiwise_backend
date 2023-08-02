@@ -1,9 +1,7 @@
-import { sendUpdatedOngoingCourse } from "../controller.js";
 import Course from "../models/course.model.js";
 import Lesson from "../models/lesson.model.js";
 import express from "express";
 import moment from "moment";
-import { getIoInstance } from "../socket.js";
 
 const router = express.Router();
 
@@ -92,10 +90,6 @@ router.get("/ongoingCourses", async (req, res) => {
         const coursesWithOngoingLessons = await Course.find({
             _id: { $in: courseIdsWithOngoingLessons },
         });
-    
-        //socket.io connections
-        const io = getIoInstance();
-        sendUpdatedOngoingCourse(io);
 
         res.status(200).json(coursesWithOngoingLessons);
     } catch (err) {
