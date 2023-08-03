@@ -63,7 +63,7 @@ app.get("/sse", async (req, res) => {
     return;
   }
 
-  res.setHeader("Content-Type", "text");
+  res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
