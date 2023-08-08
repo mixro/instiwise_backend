@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import roomRoute from "./routes/Rooms.js";
 import lessonRoute from "./routes/Lessons.js";
+import userRoute from "./routes/User.js";
+import authRoute from "./routes/Auth.js";
 import courseRoute from "./routes/Courses.js";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -46,6 +48,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use("/api/rooms", roomRoute);
 app.use("/api/lessons", lessonRoute);
 app.use("/api/courses", courseRoute);
+app.use("/api/users", userRoute);
+app.use("/api/auth", authRoute);
 
 // SSE route for sending real-time updates
 app.get("/sse", async (req, res) => {

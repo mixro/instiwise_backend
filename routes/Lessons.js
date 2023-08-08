@@ -1,11 +1,12 @@
 import Lesson from "../models/lesson.model.js";
 import express from "express";
 import moment from "moment";
+import { verifyTokenAndAdmin } from "./verifyToken.js";
 
 const router = express.Router();
 
 //CREATE
-router.post("/", async (req, res) => {
+router.post("/", verifyTokenAndAdmin,async (req, res) => {
     const newLesson = new Lesson(req.body);
 
     try {
@@ -18,7 +19,7 @@ router.post("/", async (req, res) => {
 });
 
 //UPDATE 
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
         const updatedLesson = await Lesson.findByIdAndUpdate(
             req.params.id,
@@ -34,8 +35,8 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-//GET  PRODUCT
-router.get("/find/:id", async( req, res) => {
+//GET  LESSON
+router.get("/find/:id", verifyTokenAndAdmin, async( req, res) => {
     try {
         const lesson = await Lesson.findById(req.params.id).populate('roomId courseId');
 
@@ -46,7 +47,7 @@ router.get("/find/:id", async( req, res) => {
 })
 
 //DELETE
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
         const lesson = await Lesson.findByIdAndDelete(req.params.id);
 

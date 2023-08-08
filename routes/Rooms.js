@@ -3,11 +3,12 @@ import Lesson from '../models/lesson.model.js';
 import express from "express";
 import mongoose from 'mongoose';
 import moment from "moment";
+import { verifyTokenAndAdmin } from "./verifyToken.js";
 
 const router = express.Router();
 
 //CREATE
-router.post("/", async (req, res) => {
+router.post("/", verifyTokenAndAdmin, async (req, res) => {
     const newRoom = new Room(req.body);
 
     try {
@@ -20,7 +21,7 @@ router.post("/", async (req, res) => {
 })
 
 //UPDATE 
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
         const updatedRoom = await Room.findByIdAndUpdate(
             req.params.id,
@@ -69,7 +70,7 @@ router.get("/find/:id", async (req, res) => {
 
 
 //DELETE
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
         const room = await Room.findByIdAndDelete(req.params.id);
 

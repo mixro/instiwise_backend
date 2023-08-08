@@ -20,7 +20,9 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
-});
+},
+  { timestamps: true }
+);
 
 // Create a Course model from the schema
 export default mongoose.model('Course', courseSchema);

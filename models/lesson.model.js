@@ -38,7 +38,9 @@ const lessonSchema = Schema({
     required: true,
     enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
   },
-});
+},
+  { timestamps: true }
+);
 
 // Create a Lesson model from the schema
 

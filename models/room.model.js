@@ -29,7 +29,9 @@ const roomSchema = new Schema({
     type: String,
     required: true,
   },
-});
+},
+  { timestamps: true }  
+);
 
 // Create a Room model from the schema
 export default mongoose.model('Rooms', roomSchema);

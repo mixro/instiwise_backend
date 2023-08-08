@@ -2,11 +2,12 @@ import Course from "../models/course.model.js";
 import Lesson from "../models/lesson.model.js";
 import express from "express";
 import moment from "moment";
+import { verifyTokenAndAdmin } from "./verifyToken.js";
 
 const router = express.Router();
 
 //CREATE COURSE
-router.post("/", async (req, res) => {
+router.post("/", verifyTokenAndAdmin, async (req, res) => {
     const newCourse = new Course(req.body);
 
     try {
@@ -19,7 +20,7 @@ router.post("/", async (req, res) => {
 })
 
 //UPDATE COURSE
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
         const updatedCourse = await Course.findByIdAndUpdate(
             req.params.id,
@@ -47,7 +48,7 @@ router.get("/find/:id", async( req, res) => {
 })
 
 //DELETE
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
         const course = await Course.findByIdAndDelete(req.params.id);
 
