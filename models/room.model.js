@@ -16,6 +16,9 @@ const roomSchema = new Schema({
     type: String,
     required: true,
   },
+  type: {
+    type: String,
+  },
   description: {
     type: String,
     required: true,

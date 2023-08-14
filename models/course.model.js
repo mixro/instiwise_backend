@@ -20,6 +20,12 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
+  starting: {
+    type: Number
+  },
+  Ending: {
+    type: Number
+  },
 },
   { timestamps: true }
 );
