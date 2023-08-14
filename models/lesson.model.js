@@ -6,6 +6,7 @@ const lessonSchema = Schema({
   name: {
     type: String,
     required: true,
+    unique: true
   },  
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
