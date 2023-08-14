@@ -23,7 +23,7 @@ const courseSchema = new Schema({
   starting: {
     type: Number
   },
-  Ending: {
+  ending: {
     type: Number
   },
 },
