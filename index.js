@@ -37,7 +37,7 @@ const handleError = (error) => {
 }
 
 //middleware
-app.use(cors({ origin: ["http://localhost:3000", "http://localhost:3001", "https://instiwise.netlify.app"], credentials: true }));
+app.use(cors({ origin: ["http://localhost:3000", "http://localhost:3001", "https://instiwise.netlify.app", "https://instiwise-admin.netlify.app"], credentials: true }));
 app.use(express.json());
 
 //body parser 
