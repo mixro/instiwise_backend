@@ -56,7 +56,8 @@ app.get("/sse", async (req, res) => {
   const allowedOrigins = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://instiwise.netlify.app"
+    "https://instiwise.netlify.app",
+    "https://instiwise-admin.netlify.app"
   ];
 
   const origin = req.headers.origin;

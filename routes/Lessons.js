@@ -80,6 +80,17 @@ router.get('/room/:id', async (req, res) => {
   }
 });
 
+// GET LESSONS FOR A PARTICULAR COURSE
+router.get('/course/:id', async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const lessonsForCourse = await Lesson.find({ courseId }).populate('roomId courseId');
+
+    res.status(200).json(lessonsForCourse);
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting lessons for the course', error: error.message });
+  }
+});
 
 // GET ONGOING LESSONS
 router.get('/ongoing', async (req, res) => {
