@@ -26,7 +26,6 @@ router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
             {
                 $set: req.body,
             },
-            { new: true },
         );
 
         res.status(200).json(updatedLesson);
