@@ -46,35 +46,54 @@ router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
     }
 });
 
-//like/dislike a post
+// Like a post
 router.put("/:id/like", verifyToken, async (req, res) => {
-    try {
+  try {
       const post = await Post.findById(req.params.id);
-      if (!post.likes.includes(req.body.userId)) {
-        await post.updateOne({ $push: { likes: req.body.userId } });
-        res.status(200).json("The post has been liked");
+      const userId = req.user.id;
+
+      if (post.dislikes.includes(userId)) {
+          // If the user already disliked the post, remove from dislikes and add to likes
+          await post.updateOne({ $pull: { dislikes: userId }, $push: { likes: userId } });
+          res.status(200).json("The post has been liked and undisliked");
+      } else if (!post.likes.includes(userId)) {
+          // If the user hasn't liked the post, add to likes
+          await post.updateOne({ $push: { likes: userId } });
+          res.status(200).json("The post has been liked");
       } else {
-        res.status(200).json("The post has been liked, already");
+          // If the user already liked the post, remove from likes
+          await post.updateOne({ $pull: { likes: userId } });
+          res.status(200).json("The post has been unliked");
       }
-    } catch (err) {
+  } catch (err) {
       res.status(500).json(err);
-    }
+  }
 });
 
-//like/dislike a post
+// Dislike a post
 router.put("/:id/dislike", verifyToken, async (req, res) => {
-    try {
+  try {
       const post = await Post.findById(req.params.id);
-      if (!post.likes.includes(req.body.userId)) {
-        await post.updateOne({ $push: { likes: req.body.userId } });
-        res.status(200).json("The post has been disliked");
+      const userId = req.user.id;
+
+      if (post.likes.includes(userId)) {
+          // If the user already liked the post, remove from likes and add to dislikes
+          await post.updateOne({ $pull: { likes: userId }, $push: { dislikes: userId } });
+          res.status(200).json("The post has been disliked and unliked");
+      } else if (!post.dislikes.includes(userId)) {
+          // If the user hasn't disliked the post, add to dislikes
+          await post.updateOne({ $push: { dislikes: userId } });
+          res.status(200).json("The post has been disliked");
       } else {
-        res.status(200).json("The post has been disliked");
+          // If the user already disliked the post, remove from dislikes
+          await post.updateOne({ $pull: { dislikes: userId } });
+          res.status(200).json("The post has been undisliked");
       }
-    } catch (err) {
+  } catch (err) {
       res.status(500).json(err);
-    }
+  }
 });
+
 
 //get a post
 router.get("/:id", async (req, res) => {
