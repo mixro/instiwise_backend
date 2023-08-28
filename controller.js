@@ -1,6 +1,7 @@
 import Room from "./models/room.model.js";
 import Lesson from './models/lesson.model.js';
 import Course from "./models/course.model.js";
+import Post from "./models/post.model.js";
 import mongoose from 'mongoose';
 import moment from "moment";
 
@@ -152,6 +153,49 @@ export const sendUpdatedUpcomingLessons = async () => {
         console.error("Error sending upcoming lessons data:", error);
     }
 };
+
+//POSTS
+export const sendUpdatedPosts = async () => {
+  try {
+    const posts = await Post.find();
+    return posts;
+  } catch(error) {
+    console.error("Error sending post data:", error);
+  } 
+}
+
+//LESSONS
+export const sendUpdatedLessons = async () => {
+  try {
+    const lessons = await Lesson.find().populate('roomId courseId');
+
+    return lessons;
+  } catch (error) {
+    console.log("Error sending lessons data:", error);
+  }
+}
+
+//ROOMS
+export const sendUpdatedRooms = async () => {
+  try {
+    const rooms = await Room.find();
+
+    return rooms;
+  } catch(error) {
+    console.err("Error sending lessons data:", error)
+  }
+}
+
+//COURSES
+export const sendUpdatedCourses = async () => {
+  try {
+    const courses = await Course.find();
+
+    return courses;
+  } catch(error) {
+    console.err("Error sending courses data:", error)
+  }
+}
 
 // Helper function to convert time string (HH:mm) to minutes
 const getTimeInMinutes = (timeString) => {

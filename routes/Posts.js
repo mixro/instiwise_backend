@@ -94,6 +94,21 @@ router.put("/:id/dislike", verifyToken, async (req, res) => {
   }
 });
 
+//view post
+router.post("/:id/view", verifyToken, async (req, res) => {
+  try {
+      const post = await Post.findById(req.params.id);
+      if (!post.views.includes(req.user.id)) {
+          post.views.push(req.user.id);
+          await post.save();
+          res.status(200).json("Post viewed successfully");
+      } else {
+          res.status(200).json("Post already viewed");
+      }
+  } catch (err) {
+      res.status(500).json(err);
+  }
+});
 
 //get a post
 router.get("/:id", async (req, res) => {
