@@ -91,6 +91,20 @@ router.get('/course/:id', async (req, res) => {
   }
 });
 
+// GET LESSONS FOR THE CURRENT DAY
+router.get('/currentday', async (req, res) => {
+  try {
+    const currentDay = moment().format('dddd'); // Get the current day in long format (e.g., "Monday")
+
+    const lessonsForCurrentDay = await Lesson.find({ day: currentDay }).populate('roomId courseId');
+
+    res.status(200).json(lessonsForCurrentDay);
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting lessons for the current day', error: error.message });
+  }
+});
+
+
 // GET ONGOING LESSONS
 router.get('/ongoing', async (req, res) => {
   try {

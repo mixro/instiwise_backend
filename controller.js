@@ -154,6 +154,20 @@ export const sendUpdatedUpcomingLessons = async () => {
     }
 };
 
+//LESSONS FOR THE CURRENT DAY
+export const sendCurrentDayLessons = async () => {
+  try {
+    const currentDay = moment().format('dddd'); // Get the current day in long format (e.g., "Monday")
+
+    const lessonsForCurrentDay = await Lesson.find({ day: currentDay }).populate('roomId courseId');
+
+    return lessonsForCurrentDay;
+
+  } catch(error) {
+    console.error("Error sending lessons on current day:", error)
+  }
+}
+
 //POSTS
 export const sendUpdatedPosts = async () => {
   try {
