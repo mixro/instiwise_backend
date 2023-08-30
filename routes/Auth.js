@@ -69,4 +69,52 @@ router.post("/login", async (req, res) => {
     }
 })
 
+//GOOGLE AUTH
+router.post("/google", async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email });
+
+        if(!user) {
+            const temporaryPassword = Math.random().toString(36).substring(7);
+
+            const newUser = new User({
+                username: req.body.username,
+                email: req.body.email,
+                phoneNumber: req.body.phoneNumber,
+                gender: req.body.gender,
+                course: req.body.course,
+                password: CryptoJS.AES.encrypt(temporaryPassword, process.env.PASS_SEC).toString(),
+            });
+
+            const savedUser = await newUser.save();
+            const accessToken = jwt.sign(
+                {
+                    id: savedUser._id,
+                    isAdmin: savedUser.isAdmin,
+                },
+                process.env.JWT_SEC,
+                {expiresIn:"86400d"}
+            );
+
+            const { password, ...others } = savedUser._doc;
+
+            res.status(201).json({...others, accessToken})
+        }
+
+        const accessToken = jwt.sign(
+            {
+                id: user._id,
+                isAdmin: user.isAdmin,
+            },
+            process.env.JWT_SEC,
+            {expiresIn:"8640d"}
+        );
+
+        const { password, ...others } = user._doc;
+        return res.status(200).json({...others, accessToken});
+    } catch(error) {
+        return res.status(500).json("Error while logging in")
+    }
+})
+
 export default router
