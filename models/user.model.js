@@ -10,6 +10,7 @@ const userSchema = new Schema(
         gender: { type: String,},
         course: { type: String,},
         phoneNumber: { type: String,},
+        img: { type: String,},
         isAdmin: { type: Boolean, default: false,},
     },
     { timestamps: true }

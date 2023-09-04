@@ -11,6 +11,7 @@ router.post("/register", async (req, res) => {
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         gender: req.body.gender,
+        img: req.body.img,
         course: req.body.course,
         password: CryptoJS.AES.encrypt(
             req.body.password,
@@ -81,6 +82,7 @@ router.post("/google", async (req, res) => {
                 username: req.body.username,
                 email: req.body.email,
                 phoneNumber: req.body.phoneNumber,
+                img: req.body.img,
                 gender: req.body.gender,
                 course: req.body.course,
                 password: CryptoJS.AES.encrypt(temporaryPassword, process.env.PASS_SEC).toString(),
