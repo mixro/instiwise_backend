@@ -2,8 +2,79 @@ import Lesson from "../models/lesson.model.js";
 import express from "express";
 import moment from "moment";
 import { verifyTokenAndAdmin } from "./verifyToken.js";
+import Room from "../models/room.model.js";
+import Course from "../models/course.model.js";
 
 const router = express.Router();
+
+//FUCTIONS
+const getRoomIdByName = async (roomName) => {
+  try {
+      const room = await Room.findOne({ roomName: roomName });
+
+      if (room) {
+          return room._id;
+      } else {
+          console.warn(`Room not found with name: ${roomName}`);
+          return null;
+      }
+  } catch (err) {
+      console.error("Error fetching room ID:", err);
+      return null;
+  }
+};
+
+const getCourseIdByName = async (name) => {
+  try {
+      const course = await Course.findOne({ name: name });
+
+      if (course) {
+          return course._id;
+      } else {
+          console.warn(`Course not found with name: ${name}`);
+          return null;
+      }
+  } catch (err) {
+      console.error("Error fetching course ID:", err);
+      return null;
+  }
+};
+
+//CREATE MULTIPLE LESSONS
+router.post("/multiple", verifyTokenAndAdmin, async (req, res) => {
+  const lessonsData = req.body; // Array of lesson data objects
+
+  const savedLessons = [];
+
+  for (const lessonData of lessonsData) {
+      // Lookup room and course IDs based on their names
+      const roomId = await getRoomIdByName(lessonData.roomId);
+      const courseId = await getCourseIdByName(lessonData.courseId);
+
+      if (!roomId || !courseId) {
+          // If roomId or courseId not found, skip this lesson and continue to the next one
+          console.warn(`Skipping lesson due to missing room or course: ${lessonData.name}`);
+          continue;
+      }
+
+      // Create a new lesson with the retrieved IDs
+      const newLesson = new Lesson({
+          ...lessonData,
+          roomId,
+          courseId,
+      });
+
+      try {
+          const savedLesson = await newLesson.save();
+          savedLessons.push(savedLesson);
+      } catch (err) {
+          console.error(`Error saving lesson ${lessonData.name}:`, err);
+      }
+  }
+
+  res.status(200).json(savedLessons);
+});
+
 
 //CREATE
 router.post("/", verifyTokenAndAdmin,async (req, res) => {
@@ -17,6 +88,7 @@ router.post("/", verifyTokenAndAdmin,async (req, res) => {
         res.status(500).json(err);
     }
 });
+
 
 //UPDATE 
 router.put("/:id", verifyTokenAndAdmin, async (req, res) => {

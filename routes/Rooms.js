@@ -18,7 +18,32 @@ router.post("/", verifyTokenAndAdmin, async (req, res) => {
     } catch(err) {
         res.status(500).json(err);
     }
-})
+});
+
+//CREATE MULTIPLE
+router.post('/multiple', verifyTokenAndAdmin, async (req, res) => {
+  const roomDataArray = req.body; // An array of room objects from the request body
+
+  // Process each room object and save it to the database
+  const savedRooms = [];
+
+  for (const roomData of roomDataArray) {
+    try {
+      const newRoom = new Room(roomData);
+      const savedRoom = await newRoom.save();
+      savedRooms.push(savedRoom);
+    } catch (error) {
+      console.error('Error creating room:', error);
+      continue;
+    }
+  }
+
+  if (savedRooms.length === 0) {
+    return res.status(500).json({ message: 'No rooms were created successfully.' });
+  }
+
+  res.status(200).json(savedRooms);
+});
 
 //UPDATE 
 router.put("/:id", verifyTokenAndAdmin, async (req, res) => {

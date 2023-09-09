@@ -12,6 +12,10 @@ const courseSchema = new Schema({
     type: Number,
     required: true,
   },
+  courseName: {
+    type: String,
+    required: true,
+  },
   department: {
     type: String,
     required: true,

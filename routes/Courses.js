@@ -19,6 +19,31 @@ router.post("/", verifyTokenAndAdmin, async (req, res) => {
     }
 })
 
+//CREATE MULTIPLE
+router.post('/multiple', verifyTokenAndAdmin, async (req, res) => {
+    const courseDataArray = req.body; // An array of room objects from the request body
+  
+    // Process each room object and save it to the database
+    const savedCourses = [];
+  
+    for (const courseData of courseDataArray) {
+      try {
+        const newCourse = new Room(courseData);
+        const savedCourse = await newCourse.save();
+        savedCourses.push(savedCourse);
+      } catch (error) {
+        console.error('Error creating course:', error);
+        continue;
+      }
+    }
+  
+    if (savedCourses.length === 0) {
+      return res.status(500).json({ message: 'No course were created successfully.' });
+    }
+  
+    res.status(200).json(savedCourses);
+  });
+
 //UPDATE COURSE
 router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
