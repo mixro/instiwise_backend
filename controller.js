@@ -27,6 +27,12 @@ export const sendUpdatedFreeRooms = async () => {
           _id: { $nin: inUseRoomObjectIds },
       });
 
+      // Update the status of each room document to 'free'
+      for (const room of freeRooms) {
+        room.status = 'free';
+        await room.save();
+      }
+
       return freeRooms;
     } catch (error) {
       console.error("Error sending free rooms data:", error);

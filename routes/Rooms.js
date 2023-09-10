@@ -136,6 +136,12 @@ router.get('/free', async (req, res) => {
           _id: { $nin: inUseRoomObjectIds },
       });
 
+      // Update the status of each room document to 'free'
+      for (const room of freeRooms) {
+        room.status = 'free';
+        await room.save();
+      }
+
       res.json(freeRooms);
   } catch (error) {
       console.log(error);
