@@ -12,7 +12,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import moment from "moment-timezone";
 import { createServer } from "http";
-import { sendCurrentDayLessons, sendUpdatedCourses, sendUpdatedFreeRooms, sendUpdatedInUseRooms, sendUpdatedLessons, sendUpdatedOngoingCourse, sendUpdatedOngoingLessons, sendUpdatedPosts, sendUpdatedRooms, sendUpdatedUpcomingLessons } from "./controller.js";
+import { sendCurrentDayLessons, sendUpdatedFreeRooms, sendUpdatedInUseRooms, sendUpdatedOngoingCourse, sendUpdatedOngoingLessons, sendUpdatedPosts, sendUpdatedUpcomingLessons } from "./controller.js";
 
 // Setting time zone to East Africa Time (Africa/Nairobi)
 moment.tz.setDefault("Africa/Nairobi");
@@ -82,9 +82,6 @@ app.get("/sse", async (req, res) => {
     const upcomingLessons = await sendUpdatedUpcomingLessons();
     const posts = await sendUpdatedPosts();
     const todaysLessons = await sendCurrentDayLessons();
-    const lessons = await sendUpdatedLessons();
-    const rooms = await sendUpdatedRooms();
-    const courses = await sendUpdatedCourses();
   
     // Collect the data
     const updatedData = {
@@ -95,9 +92,6 @@ app.get("/sse", async (req, res) => {
       upcomingLessons,
       posts,
       todaysLessons,
-      lessons,
-      rooms,
-      courses
     };
   
     // Send a message to the client
