@@ -5,6 +5,7 @@ const ProjectSChema = new Schema ({
     title: {
         type: String,
         required: true,
+        unique: true,
     },
     userId: {
         type: String,
