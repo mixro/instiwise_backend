@@ -17,23 +17,23 @@ router.post("/", verifyToken, async(req, res) => {
 
 //update project
 router.put("/:id", verifyToken, async (req, res) => {
-    try {
-      const project = await Project.findById(req.params.id);
-      if (project.userId === req.user.id || req.user.isAdmin) {
-        const updatedProject = await Project.findByIdAndUpdate(
-          req.params.id,
-          {
-              $set: req.body,
-          },
-        );
-  
-        res.status(200).json(updatedProject);
-      } else {
-        res.status(403).json("you can update only your project");
-      }
-    } catch (err) {
-      res.status(500).json(err);
+  try {
+    const project = await Project.findById(req.params.id);
+    if (project.userId === req.user.id || req.user.isAdmin) {
+      const updatedProject = await Project.findByIdAndUpdate(
+        req.params.id,
+        {
+            $set: req.body,
+        },
+      );
+
+      res.status(200).json(updatedProject);
+    } else {
+      res.status(403).json("you can update only your project");
     }
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 //delete project
