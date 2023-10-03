@@ -8,6 +8,7 @@ import userRoute from "./routes/User.js";
 import authRoute from "./routes/Auth.js";
 import courseRoute from "./routes/Courses.js";
 import postRoute from "./routes/Posts.js";
+import projectRoute from "./routes/Projects.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import moment from "moment-timezone";
@@ -52,6 +53,7 @@ app.use("/api/courses", courseRoute);
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/posts", postRoute);
+app.use("/api/projects", projectRoute);
 
 // SSE route for sending real-time updates
 app.get("/sse", async (req, res) => {

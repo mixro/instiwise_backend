@@ -15,7 +15,7 @@ router.post("/", verifyTokenAndAdmin, async (req, res) => {
     }
 });
 
-//update a post
+//update post
 router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
     try {
       const updatedPost = await Post.findByIdAndUpdate(
