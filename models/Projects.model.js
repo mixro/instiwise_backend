@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const ProjectSChema = new Schema ({
+const ProjectSChema = new Schema({
     title: {
         type: String,
         required: true,
         unique: true,
     },
     userId: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
     description: {
         type: String,
@@ -66,7 +67,7 @@ const ProjectSChema = new Schema ({
         default: []
     },
 }, 
-    { timestaps: true }
+    { timestamps: true }
 );
 
 export default mongoose.model('Projects', ProjectSChema);

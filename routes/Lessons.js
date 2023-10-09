@@ -77,7 +77,7 @@ router.post("/multiple", verifyTokenAndAdmin, async (req, res) => {
 
 
 //CREATE
-router.post("/", verifyTokenAndAdmin,async (req, res) => {
+router.post("/", verifyTokenAndAdmin, async (req, res) => {
     const newLesson = new Lesson(req.body);
 
     try {

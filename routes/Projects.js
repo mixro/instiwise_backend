@@ -19,28 +19,37 @@ router.post("/", verifyToken, async(req, res) => {
 router.put("/:id", verifyToken, async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
-    if (project.userId === req.user.id || req.user.isAdmin) {
+
+    // Convert project.userId (ObjectId) to a string for comparison
+    const projectUserIdString = project.userId.toString();
+
+    if (projectUserIdString === req.user.id || req.user.isAdmin) {
       const updatedProject = await Project.findByIdAndUpdate(
         req.params.id,
         {
-            $set: req.body,
-        },
+          $set: req.body,
+        }
       );
 
       res.status(200).json(updatedProject);
     } else {
-      res.status(403).json("you can update only your project");
+      res.status(403).json("You can update only your project");
     }
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
+
 //delete project
 router.delete("/:id", verifyToken, async (req, res) => {
     try {
       const project = await Project.findById(req.params.id);
-      if (project.userId === req.user.id || req.user.isAdmin) {
+
+      // Convert project.userId (ObjectId) to a string for comparison
+      const projectUserIdString = project.userId.toString();
+
+      if (projectUserIdString === req.user.id || req.user.isAdmin) {
         await Project.deleteOne({ $set: req.body });
         res.status(200).json("the project has been deleted");
       } else {
@@ -74,9 +83,9 @@ router.put("/:id/like", verifyToken, async (req, res) => {
 //get a project
 router.get("/:id", async (req, res) => {
     try {
-      const project = await Project.findById(req.params.id);
+      const project = await Project.findById(req.params.id).populate('userId');
       res.status(200).json(project);
-    }catch{
+    }catch(err) {
       res.status(500).json(err);
     }
 });
@@ -84,12 +93,23 @@ router.get("/:id", async (req, res) => {
 //get all project
 router.get("/", async (req, res) => {
     try {
-        const projects = await Project.find();
+        const projects = await Project.find().populate('userId');
         res.status(200).json(projects);
     } catch (err) {
         res.status(500).json(err);
     }
 })
+
+//get user's projects
+router.get("/user/:userId", async (req, res) => {
+  try {
+    // Find projects where userId matches the requested userId
+    const projects = await Project.find({ userId: req.params.userId }).populate('userId');
+    res.status(200).json(projects);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 
 export default router;

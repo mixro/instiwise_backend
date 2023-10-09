@@ -1,7 +1,8 @@
 import CryptoJS from "crypto-js";
 import express from "express"
 import User from "../models/user.model.js"
-import { verifyTokenAndAuthorization, verifyTokenAndAdmin }  from "./verifyToken.js";
+import { verifyTokenAndAuthorization,  verifyToken }  from "./verifyToken.js";
+import Project from "../models/projects.model.js";
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
             {
                 $set: req.body,
             },
+            { new: true}
         );
         res.status(200).json(updatedUser);
     } catch(err) {
@@ -39,53 +41,100 @@ router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
 });
 
 //GET USER
-router.get("/find/:id", async (req, res) => {
+router.get("/find/:id", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
-        const { password, ...others } = user._doc;
-        res.status(200).json(others);
-    } catch(err) {
-        res.status(500).json(err);
+      // Find the user by their ID
+      const user = await User.findById(req.params.id).populate("connections");
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Find all projects associated with the user's ID
+      const projects = await Project.find({ userId: user._id });
+  
+      // Exclude the password field from the user object
+      const { password, ...userData } = user.toObject();
+  
+      // Return the user object along with their projects
+      res.status(200).json({
+        ...userData,
+        projects: projects,
+      });
+    } catch (err) {
+      res.status(500).json(err);
     }
-})
+});
 
 
 //GET ALL USERS
-router.get("/", verifyTokenAndAdmin, async (req, res) => {
-    const query = req.query.new;
+router.get("/", verifyToken, async (req, res) => {
     try {
-        const users = query 
-        ? await User.find().sort({ _id: -1}).limit(5)
-        : await User.find();
-        res.status(200).json(users);
-    } catch(err) {
+      // Find all users
+      const users = await User.find();
+  
+      // Create an array to store user data with projects
+      const usersWithProjects = [];
+  
+      // Iterate through each user
+      for (const user of users) {
+        // Find all projects associated with the user's ID
+        const projects = await Project.find({ userId: user._id });
+  
+        // Exclude the password field from the user object
+        const { password, ...userData } = user.toObject();
+  
+        // Add the user object along with their projects to the array
+        usersWithProjects.push({
+          ...userData,
+          projects: projects,
+        });
+      }
+  
+      // Return the array of users with their projects
+      res.status(200).json(usersWithProjects);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+});
+
+// CONNECT WITH USER
+router.put("/:id/connect", verifyToken, async (req, res) => {
+    try {
+        const connectedUser = await User.findById(req.params.id);
+        const userId = req.user.id;
+
+        // Check if the user is trying to connect with themselves
+        if (connectedUser._id.toString() === userId.toString()) {
+            return res.status(400).json("You can't connect with yourself.");
+        }
+
+        if (!connectedUser.connections.includes(userId)) {
+            await connectedUser.updateOne({ $push: { connections: userId } });
+            res.status(200).json("The user has been connected");
+        } else {
+            await connectedUser.updateOne({ $pull: { connections: userId } });
+            res.status(200).json("The user has been disconnected");
+        }
+    } catch (err) {
         res.status(500).json(err);
     }
 });
 
-//GET USER STATS
-router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
-    const date = new Date();
-    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
-  
+
+//CHECK CONNECTION
+router.get("/:id/is-connected", verifyToken, async (req, res) => {
     try {
-      const data = await User.aggregate([
-        { $match: { createdAt: { $gte: lastYear } } },
-        {
-          $project: {
-            month: { $month: "$createdAt" },
-          },
-        },
-        {
-          $group: {
-            _id: "$month",
-            total: { $sum: 1 },
-          },
-        },
-      ]);
-      res.status(200).json(data)
+        const currentUser = req.user.id;
+        const otherUser = await User.findById(req.params.id);
+
+        // Check if the other user's ID is in the connections list of the current user
+        const isConnected = otherUser.connections.includes(currentUser);
+
+        res.status(200).json({ isConnected });
     } catch (err) {
-      res.status(500).json(err);
+        res.status(500).json(err);
     }
 });
 
