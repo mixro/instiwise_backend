@@ -47,7 +47,7 @@ router.get("/find/:id", verifyToken, async (req, res) => {
       const user = await User.findById(req.params.id).populate("connections");
   
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "Sorry!! User not found" });
       }
   
       // Find all projects associated with the user's ID
