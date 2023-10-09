@@ -1,5 +1,5 @@
 import express from "express";
-import Project from "../models/pprojects.model.js";
+import Project from "../models/pprojects.model.jss";
 import { verifyToken } from "./verifyToken.js";
 
 const router = express.Router();

@@ -1,6 +1,6 @@
 import express from "express";
 import User from "../models/user.model.js";
-import Project from "../models/projects.model.js";
+import Project from "../models/pprojects.model.js";
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
 
