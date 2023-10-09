@@ -2,7 +2,7 @@ import CryptoJS from "crypto-js";
 import express from "express"
 import User from "../models/user.model.js"
 import { verifyTokenAndAuthorization,  verifyToken }  from "./verifyToken.js";
-import Project from "../models/projects.model.js";
+import projectsModel from "../models/projects.model.js";
 
 const router = express.Router();
 
@@ -51,7 +51,7 @@ router.get("/find/:id", verifyToken, async (req, res) => {
       }
   
       // Find all projects associated with the user's ID
-      const projects = await Project.find({ userId: user._id });
+      const projects = await projectsModel.find({ userId: user._id });
   
       // Exclude the password field from the user object
       const { password, ...userData } = user.toObject();
@@ -79,7 +79,7 @@ router.get("/", verifyToken, async (req, res) => {
       // Iterate through each user
       for (const user of users) {
         // Find all projects associated with the user's ID
-        const projects = await Project.find({ userId: user._id });
+        const projects = await projectsModel.find({ userId: user._id });
   
         // Exclude the password field from the user object
         const { password, ...userData } = user.toObject();
