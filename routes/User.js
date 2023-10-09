@@ -2,7 +2,7 @@ import CryptoJS from "crypto-js";
 import express from "express"
 import User from "../models/user.model.js"
 import { verifyTokenAndAuthorization,  verifyToken }  from "./verifyToken.js";
-import Project from "../models/projects.model.js";
+import Project from "../models/pprojects.model.js";
 
 const router = express.Router();
 
