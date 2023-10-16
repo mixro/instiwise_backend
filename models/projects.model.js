@@ -35,7 +35,7 @@ const ProjectSChema = new Schema({
     },
     status: {
         type: String,
-        enum: ['in progress', 'On hold', 'completed'],
+        enum: ['in progress', 'on hold', 'completed'],
         default: 'in progress',
     },
     goals: {

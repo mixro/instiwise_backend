@@ -139,7 +139,7 @@ router.get("/:id/is-connected", verifyToken, async (req, res) => {
 });
 
 // Add this route to your existing router
-router.get("/existing-usernames", verifyToken, async (req, res) => {
+router.get("/existing-usernames", async (req, res) => {
     try {
         // Fetch existing usernames from your database (replace with your actual method)
         const existingUsernames = await User.distinct("username");
