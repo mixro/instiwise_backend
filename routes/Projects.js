@@ -50,7 +50,7 @@ router.delete("/:id", verifyToken, async (req, res) => {
       const projectUserIdString = project.userId.toString();
 
       if (projectUserIdString === req.user.id || req.user.isAdmin) {
-        await Project.deleteOne({ $set: req.body });
+        await project.deleteOne({ $set: req.body });
         res.status(200).json("the project has been deleted");
       } else {
         res.status(403).json("you can delete only your project");
