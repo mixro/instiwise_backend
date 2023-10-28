@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import Project from "../models/projects.model.js";
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
+import { verifyTokenAndAuthorization } from "./verifyToken.js";
 
 const router = express.Router();
 
@@ -86,6 +87,30 @@ router.post("/login", async (req, res) => {
       return res.status(500).json(err);
     }
 });
+
+// Backend Express route for updating the password
+router.post("/update-password/:id", verifyTokenAndAuthorization, async (req, res) => {
+  try {
+    const user = await User.findOne({_id: req.params.id});
+
+    if (!user) {
+      return res.status(400).json("User not found");
+    }
+
+    // Access the old password with the correct property name
+    const hashedPassword = CryptoJS.AES.decrypt(user.password, process.env.PASS_SEC);
+    const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
+
+    if (originalPassword !== req.body.oldPassword) {
+      return res.status(201).json("Old password is incorrect");
+    } else {
+      return res.status(200).json("Old password is correct");
+    }
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
   
 
 //GOOGLE LOGIN
