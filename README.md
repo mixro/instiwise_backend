@@ -96,7 +96,7 @@ instiwise_backend/
 ### Installation
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/your-username/instiwise_backend.git
+   git clone https://github.com/mixro/instiwise_backend.git
    cd instiwise_backend
    ```
 
