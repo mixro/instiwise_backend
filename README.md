@@ -1,4 +1,4 @@
-# InstiWise Backend - Technical Documentation
+# INSTiWISE Backend - Technical Documentation
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18.x-green) 
 ![Express.js](https://img.shields.io/badge/Express.js-v4.x-blue)
@@ -8,7 +8,6 @@
 
 The **InstiWise Backend** is a robust Node.js-based backend designed to support academic management, project sharing, student networking, and institute-wide announcements. It provides secure APIs for **user authentication, course and lesson scheduling, project documentation, and centralized communication**.
 
----
 
 ## Table of Contents
 
@@ -26,7 +25,6 @@ The **InstiWise Backend** is a robust Node.js-based backend designed to support 
 - [Future Improvements](#future-improvements)
 - [Support](#support)
 
----
 
 ## Overview
 
@@ -38,7 +36,6 @@ The InstiWise backend powers the **Smart Institute Concept**, enabling:
 
 It uses **Express.js** for routing, **MongoDB** (via Mongoose) for data storage, and **JWT** for authentication.
 
----
 ## Project Structure
 
 ```
@@ -67,7 +64,6 @@ instiwise_backend/
 ├── package.json              # Dependencies & scripts
 └── package-lock.json
 ```
----
 ## Architecture
 
 ### Components
@@ -77,7 +73,6 @@ instiwise_backend/
 - **CryptoJS**: Encrypts passwords for safe storage.
 - **Middleware**: Protects routes using `verifyToken.js`.
 
----
 
 ## Technologies
 
@@ -89,7 +84,6 @@ instiwise_backend/
 - **CryptoJS**: For password encryption  
 - **Moment.js**: For time/date management  
 
----
 
 ## Setup Instructions
 
@@ -131,11 +125,9 @@ instiwise_backend/
    Backend runs at:
    👉 http://localhost:8800/api/
 
----
 
 
 
----
 
 ## API Endpoints
 
@@ -169,7 +161,6 @@ instiwise_backend/
   - POST /api/posts/ → Create news/announcement
   - GET /api/posts/ → Get all posts
 
----
 
 ## Authentication
 
@@ -177,7 +168,6 @@ instiwise_backend/
 - **verifyToken.js middleware**: Protects restricted APIs.
 - **Roles**: Admins can create/update/delete lessons, courses, rooms, and posts.
 
----
 
 ## Testing
 
@@ -185,7 +175,6 @@ instiwise_backend/
 - Run backend locally with MongoDB connection.
 - Future improvements include Jest test coverage.
 
----
 
 ## Deployment
 
@@ -193,14 +182,12 @@ instiwise_backend/
 - Use MongoDB Atlas for database hosting.
 - Add CI/CD pipelines for continuous deployment.
 
----
 
 ## Error Handling
 
 - Standardized error responses (400, 401, 403, 500).
 - Middleware catches and logs errors.
 
----
 
 ## Security
 
@@ -209,7 +196,6 @@ instiwise_backend/
 - Role-based access for admin routes.
 - MongoDB validation to prevent injections.
 
----
 
 ## Future Improvements
 
@@ -218,10 +204,9 @@ instiwise_backend/
 - Analytics dashboard for administrators.
 - Improved project sharing (files, videos).
 
----
 
 ## Support
 
-For inquiries or support:
-📧 Email: josephchongola43@gmail.com 
+For inquiries or support:\
+📧 Email: josephchongola43@gmail.com\
 🌐 Website: [INSTiWISE Platform](https://instiwise.netlify.app/)
